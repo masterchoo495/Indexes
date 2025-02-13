@@ -75,6 +75,22 @@ WHERE date(p.payment_date) = '2005-07-30' and c.customer_id  = p.customer_id
 Скриншот из DBeaver:
 ![alt text](https://github.com/masterchoo495/Indexes/blob/main/002.png)
 
+
+И, как альтернатива, переписать запрос с использованием объединения таблиц вместо оконной функции.
+Текст запроса:
+```sql
+SELECT CONCAT(c.last_name, ' ', c.first_name) AS customer, SUM(p.amount)
+FROM customer c
+JOIN payment p ON p.customer_id = c.customer_id 
+WHERE date(p.payment_date) = '2005-07-30'
+GROUP BY customer
+```
+
+Результат тот же, время выполнения сопоставимо с оптимизированным запросом выше.
+
+Скриншот из DBeaver:
+![alt text](https://github.com/masterchoo495/Indexes/blob/main/003.png)
+
 ---
 
 ## Дополнительные задания (со звёздочкой*)
