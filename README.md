@@ -2,6 +2,20 @@
 
 Напишите запрос к учебной базе данных, который вернёт процентное отношение общего размера всех индексов к общему размеру всех таблиц.
 
+### Решение
+
+Текст запроса:
+```
+SELECT SUM(data_length) AS "Размер таблиц", SUM(index_length) AS "Размер индексов", (SUM(index_length)/SUM(data_length))*100 AS "Процентное отношение"
+FROM INFORMATION_SCHEMA.TABLES
+WHERE table_schema = 'sakila';
+```
+
+Скриншот из DBeaver:
+![alt text](https://github.com/masterchoo495/Indexes/blob/main/001.png)
+
+---
+
 ### Задание 2
 
 Выполните explain analyze следующего запроса:
@@ -12,6 +26,20 @@ where date(p.payment_date) = '2005-07-30' and p.payment_date = r.rental_date and
 ```
 - перечислите узкие места;
 - оптимизируйте запрос: внесите корректировки по использованию операторов, при необходимости добавьте индексы.
+
+### Решение
+
+Текст запроса:
+```
+SELECT SUM(data_length) AS "Размер таблиц", SUM(index_length) AS "Размер индексов", (SUM(index_length)/SUM(data_length))*100 AS "Процентное отношение"
+FROM INFORMATION_SCHEMA.TABLES
+WHERE table_schema = 'sakila';
+```
+
+Скриншот из DBeaver:
+![alt text](https://github.com/masterchoo495/Indexes/blob/main/002.png)
+
+---
 
 ## Дополнительные задания (со звёздочкой*)
 Эти задания дополнительные, то есть не обязательные к выполнению, и никак не повлияют на получение вами зачёта по этому домашнему заданию. Вы можете их выполнить, если хотите глубже шире разобраться в материале.
