@@ -5,7 +5,7 @@
 ### Решение
 
 Текст запроса:
-```
+```sql
 SELECT SUM(data_length) AS "Размер таблиц", SUM(index_length) AS "Размер индексов", (SUM(index_length)/SUM(data_length))*100 AS "Процентное отношение"
 FROM INFORMATION_SCHEMA.TABLES
 WHERE table_schema = 'sakila';
@@ -32,7 +32,7 @@ where date(p.payment_date) = '2005-07-30' and p.payment_date = r.rental_date and
 Исходный запрос перегружен условиями и затрагиваемыми таблицами, ввиду чего его выполнение на моем стенде занимает около 3-х секунд и в процессе обрабатывается (!) 642 000 строк. На мой взгляд, учитывая характер получаемых данных, избыточной является информация о названии фильма (f.title), инвентаре (inventory_id) и дате аренды (rental_date).
 
 Вывод EXPLAIN ANALYZE:
-```
+```sql
 -> Table scan on <temporary>  (cost=2.5..2.5 rows=0) (actual time=3002..3002 rows=391 loops=1)
     -> Temporary table with deduplication  (cost=0..0 rows=0) (actual time=3002..3002 rows=391 loops=1)
         -> Window aggregate with buffering: sum(payment.amount) OVER (PARTITION BY c.customer_id,f.title )   (actual time=1342..2909 rows=642000 loops=1)
