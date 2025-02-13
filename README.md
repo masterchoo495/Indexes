@@ -52,7 +52,7 @@ where date(p.payment_date) = '2005-07-30' and p.payment_date = r.rental_date and
 ```
 
 Текст оптимизированного запроса (убрал лишнее из описанного выше):
-```
+```sql
 SELECT DISTINCT CONCAT(c.last_name, ' ', c.first_name), SUM(p.amount) over (partition by c.customer_id)
 FROM payment p, customer c
 WHERE date(p.payment_date) = '2005-07-30' and c.customer_id  = p.customer_id
@@ -60,7 +60,7 @@ WHERE date(p.payment_date) = '2005-07-30' and c.customer_id  = p.customer_id
 Данный запрос возвращает тот же результат (391 строку), но выполняется за 0,007 секунды и обрабатывает всего лишь 634 строки, т.е. в 1000 раз меньше, чем при выполнении исходного запроса.
 
 Вывод EXPLAIN ANALYZE:
-```
+```sql
 -> Table scan on <temporary>  (cost=2.5..2.5 rows=0) (actual time=4.23..4.26 rows=391 loops=1)
     -> Temporary table with deduplication  (cost=0..0 rows=0) (actual time=4.23..4.23 rows=391 loops=1)
         -> Window aggregate with buffering: sum(payment.amount) OVER (PARTITION BY c.customer_id )   (actual time=3.69..4.15 rows=634 loops=1)
