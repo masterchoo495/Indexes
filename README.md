@@ -91,6 +91,40 @@ GROUP BY customer
 Скриншот из DBeaver:
 ![alt text](https://github.com/masterchoo495/Indexes/blob/main/003.png)
 
+### Доработка
+Добавил индекс:
+```sql
+CREATE INDEX pay_day ON payment(payment_date)
+```
+Переделал запрос исключая только таблицу film:
+```sql
+SELECT CONCAT(c.last_name, ' ', c.first_name) AS customer, SUM(p.amount)
+FROM customer c
+JOIN rental r ON c.customer_id = r.customer_id 
+JOIN inventory i ON i.inventory_id = r.inventory_id 
+JOIN payment p ON r.rental_date = p.payment_date
+WHERE payment_date >= '2005-07-30' and payment_date < DATE_ADD('2005-07-30', INTERVAL 1 DAY)
+GROUP BY c.customer_id
+```
+
+![alt text](https://github.com/masterchoo495/Indexes/blob/main/004.png)
+
+Вывод EXPLAIN ANALYZE:
+```sql
+-> Table scan on <temporary>  (actual time=4.44..4.47 rows=391 loops=1)
+    -> Aggregate using temporary table  (actual time=4.43..4.43 rows=391 loops=1)
+        -> Nested loop inner join  (cost=807 rows=661) (actual time=0.0516..4.19 rows=642 loops=1)
+            -> Nested loop inner join  (cost=582 rows=661) (actual time=0.0494..3.75 rows=642 loops=1)
+                -> Nested loop inner join  (cost=351 rows=634) (actual time=0.0415..0.664 rows=634 loops=1)
+                    -> Filter: ((r.rental_date >= TIMESTAMP'2005-07-30 00:00:00') and (r.rental_date < <cache>(('2005-07-30' + interval 1 day))))  (cost=129 rows=634) (actual time=0.0345..0.166 rows=634 loops=1)
+                        -> Covering index range scan on r using rental_date over ('2005-07-30 00:00:00' <= rental_date < '2005-07-31 00:00:00')  (cost=129 rows=634) (actual time=0.0329..0.113 rows=634 loops=1)
+                    -> Single-row index lookup on c using PRIMARY (customer_id=r.customer_id)  (cost=0.25 rows=1) (actual time=678e-6..692e-6 rows=1 loops=634)
+                -> Index lookup on p using pay_day (payment_date=r.rental_date)  (cost=0.261 rows=1.04) (actual time=0.00454..0.00478 rows=1.01 loops=634)
+            -> Single-row covering index lookup on i using PRIMARY (inventory_id=r.inventory_id)  (cost=0.24 rows=1) (actual time=559e-6..574e-6 rows=1 loops=642)
+```
+
+![alt text](https://github.com/masterchoo495/Indexes/blob/main/005.png)
+
 ---
 
 ## Дополнительные задания (со звёздочкой*)
