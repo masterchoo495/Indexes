@@ -92,10 +92,13 @@ GROUP BY customer
 ![alt text](https://github.com/masterchoo495/Indexes/blob/main/003.png)
 
 ### Доработка
+
 Добавил индекс:
 ```sql
 CREATE INDEX pay_day ON payment(payment_date)
 ```
+![alt text](https://github.com/masterchoo495/Indexes/blob/main/004.png)
+
 Переделал запрос исключая только таблицу film:
 ```sql
 SELECT CONCAT(c.last_name, ' ', c.first_name) AS customer, SUM(p.amount)
@@ -106,10 +109,9 @@ JOIN payment p ON r.rental_date = p.payment_date
 WHERE payment_date >= '2005-07-30' and payment_date < DATE_ADD('2005-07-30', INTERVAL 1 DAY)
 GROUP BY c.customer_id
 ```
+![alt text](https://github.com/masterchoo495/Indexes/blob/main/005.png)
 
-![alt text](https://github.com/masterchoo495/Indexes/blob/main/004.png)
-
-Вывод EXPLAIN ANALYZE:
+Вывод EXPLAIN ANALYZE (видно, что добавленный мной индекс pay_day используется):
 ```sql
 -> Table scan on <temporary>  (actual time=4.44..4.47 rows=391 loops=1)
     -> Aggregate using temporary table  (actual time=4.43..4.43 rows=391 loops=1)
@@ -122,8 +124,6 @@ GROUP BY c.customer_id
                 -> Index lookup on p using pay_day (payment_date=r.rental_date)  (cost=0.261 rows=1.04) (actual time=0.00454..0.00478 rows=1.01 loops=634)
             -> Single-row covering index lookup on i using PRIMARY (inventory_id=r.inventory_id)  (cost=0.24 rows=1) (actual time=559e-6..574e-6 rows=1 loops=642)
 ```
-
-![alt text](https://github.com/masterchoo495/Indexes/blob/main/005.png)
 
 ---
 
